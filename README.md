@@ -32,3 +32,28 @@ dpll(F, literal) {
 	return dpll(F, !V) or dpll(F, V);
 }
 ```
+
+# Pomysł
+Można znaleźć zbiór literałów, które dzielą klauzule ze wszystkimi innymi literałami. Tworzymy graf $G$, gdzie wierzchołki to literały i dla każdej klauzuli $(a,b,c)$ dodajemy krawędzie $ab,bc,ca$. Wtedy $\delta(G)\geq 2$ i znalazłem w jakimś paperze, że wtedy istnieje zbiór dominujący o liczności $\gamma(G) \leq \frac{2}{5}n$. 
+
+Bierzemy ten zbiór dominujący ($S$) i zgadujemy wszystkie wartościowania $O(2^{|S|})$. Wtedy wszystkie klauzule zawierające literały z $S$ można zredukować do 2SAT. Pozostają klauzule niezawierające literałów z $S$. Ale skoro $S$ jest dominujący, to w każdy literał w 3-klauzuli jest też obecny w jakiejś $\leq 2$-klauzuli. Mamy więc sytuację (w ogólności, można rozważać prostsze przypadki, które się łatwiej redukuje)
+
+$$
+(a \vee b) \wedge (c \vee d) \wedge (e \vee f) \wedge (a \vee c \vee e),
+$$
+
+Którą zamieniamy na
+
+$$
+(a \wedge (c \vee d) \wedge (e \vee f)) \vee (\neg a \wedge b \wedge (c \vee d) \wedge (e \vee f) \wedge (c \vee e))
+$$
+
+i obie części redukujemy dalej osobno (w pierwszej mamy 1 zmienną mniej, w drugiej 2 zmienne mniej). Gdy w 3-klauzuli wszystkie zmienne będą zanegowane, to korzystamy z tego, że
+
+$$
+(a \vee b) \wedge (c \vee d) \wedge (e \vee f) \wedge (\neg a \vee \neg c \vee \neg e)\iff(a \vee b) \wedge (c \vee d) \wedge (e \vee f) \wedge (b \vee d \vee f).
+$$
+
+Jak nie będzie już więcej 3-klauzul, rozwiązujemy 2SAT.
+
+Złożoność redukcji to $O\left(\left(\frac{1+\sqrt{5}}{2}\right)^{n-|S|}\right)$ (z twierdzenia o rekurencji z ASD2). Całkowita złożoność algorytmu to będzie $O\left(2^{|S|}\cdot\left(\frac{1+\sqrt{5}}{2}\right)^{n-|S|}\right)$, co dla $|S|\leq \frac{2}{5}n$ będzie gdzieś około $O(1,7612^n)$.
