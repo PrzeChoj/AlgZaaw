@@ -34,7 +34,7 @@ dpll(F, literal) {
 ```
 
 # Pomysł
-Można znaleźć zbiór literałów, które dzielą klauzule ze wszystkimi innymi literałami. Tworzymy graf $G$, gdzie wierzchołki to literały i dla każdej klauzuli $(a,b,c)$ dodajemy krawędzie $ab,bc,ca$. Wtedy $\delta(G)\geq 2$ i znalazłem w jakimś paperze, że wtedy istnieje zbiór dominujący o liczności $\gamma(G) \leq \frac{2}{5}n$. 
+Można znaleźć zbiór literałów, które dzielą klauzule ze wszystkimi innymi literałami. Tworzymy graf $G$, gdzie wierzchołki to literały i dla każdej klauzuli $(a,b,c)$ dodajemy krawędzie $ab,bc,ca$. Wtedy $\delta(G)\geq 2$ i znalazłem w jakimś [paperze](https://arxiv.org/abs/1410.4334), że wtedy istnieje zbiór dominujący o liczności $\gamma(G) \leq \frac{2}{5}n$. 
 
 Bierzemy ten zbiór dominujący ($S$) i zgadujemy wszystkie wartościowania $O(2^{|S|})$. Wtedy wszystkie klauzule zawierające literały z $S$ można zredukować do 2SAT. Pozostają klauzule niezawierające literałów z $S$. Ale skoro $S$ jest dominujący, to w każdy literał w 3-klauzuli jest też obecny w jakiejś $\leq 2$-klauzuli. Mamy więc sytuację (w ogólności, można rozważać prostsze przypadki, które się łatwiej redukuje)
 
