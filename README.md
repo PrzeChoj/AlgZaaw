@@ -57,3 +57,17 @@ $$
 Jak nie będzie już więcej 3-klauzul, rozwiązujemy 2SAT.
 
 Złożoność redukcji to $O\left(\left(\frac{1+\sqrt{5}}{2}\right)^{n-|S|}\right)$ (z twierdzenia o rekurencji z ASD2). Całkowita złożoność algorytmu to będzie $O\left(2^{|S|}\cdot\left(\frac{1+\sqrt{5}}{2}\right)^{n-|S|}\right)$, co dla $|S|\leq \frac{2}{5}n$ będzie gdzieś około $O(1,7612^n)$.
+
+# Pomysł 2
+
+Można skorzystać tylko z tego, że
+
+$$
+(a \vee b \vee c) \wedge \Phi \iff (a \wedge \Phi) \vee (\neg a \wedge b \wedge \Phi) \vee (\neg a \wedge \neg b \wedge c \wedge \Phi) 
+$$
+
+I wtedy każdą z części rozwiązujemy osobno, wyrzucając odpowiednie zmienne. Czas wykonania algorytmu to
+
+$$
+T(n) = T(n-1)+T(n-2)+T(n-3) = O(1,84^n).
+$$
