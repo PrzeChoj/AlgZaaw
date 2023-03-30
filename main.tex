@@ -1,0 +1,294 @@
+\documentclass[a4paper,11pt,twoside]{report}
+
+\usepackage{comment}
+\usepackage{float}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+% \SetAlFnt{\footnotesize}
+\SetAlFnt{\small}
+\usepackage{anyfontsize}
+
+% --------------- Kodowanie znaków, język polski ---------------
+\usepackage[utf8]{inputenc}
+\usepackage[MeX]{polski}
+\usepackage[T1]{fontenc}
+\usepackage[english,polish]{babel}
+\hyphenation{la-bo-ra-to-rium}
+
+\usepackage{amsmath, amsfonts, amsthm, latexsym}
+\usepackage{scalefnt}
+\usepackage{commath}
+\usepackage[dvips]{graphicx}
+
+% Te 2 muszą być po \usepackage[MeX]{polski}
+\usepackage{inputenc} % ten musi być przed csquotes
+\usepackage{csquotes}
+
+% --------------------- Bibliografia ---------------------------
+\usepackage[style=authoryear-ibid,backend=biber]{biblatex}
+\addbibresource{bibliografia.bib} % zmienić nazwę jak będzie plik już konkretny
+\usepackage{biblatex}
+\usepackage[hidelinks]{hyperref}
+%\patchcmd{\thebibliography}{\section*}{\section}{}{}
+
+% --------------- Marginesy, akapity, interlinia ---------------
+\usepackage[inner=20mm, outer=20mm, bindingoffset=0mm, top=20mm, bottom=20mm]{geometry}
+\linespread{1.5}
+\allowdisplaybreaks
+\usepackage{indentfirst}
+\setlength{\parindent}{5mm}
+
+%--------------------------- ŻYWA PAGINA ------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+% numery stron: lewa do lewego, prawa do prawego 
+\fancyfoot[LE,RO]{\thepage} 
+% prawa pagina: zawartość \rightmark do lewego, wewnętrznego (marginesu) 
+\fancyhead[LO]{\sc \nouppercase{\rightmark}}
+% lewa pagina: zawartość \leftmark do prawego, wewnętrznego (marginesu) 
+\fancyhead[RE]{\sc \leftmark}
+\renewcommand{\chaptermark}[1]{
+\markboth{\thechapter.\ #1}{}}
+
+% kreski oddzielające paginy (górną i dolną):
+\renewcommand{\headrulewidth}{0 pt} % 0 - nie ma, 0.5 - jest linia
+
+\fancypagestyle{plain}{% to definiuje wygląd pierwszej strony nowego rozdziału - obecnie tylko numeracja
+  \fancyhf{}%
+  \fancyfoot[LE,RO]{\thepage}%
+  
+  \renewcommand{\headrulewidth}{0pt}% Line at the header invisible
+  \renewcommand{\footrulewidth}{0.0pt}
+}
+
+% ------------------------ Spis treści -------------------------
+\def\cleardoublepage{\clearpage\if@twoside
+\ifodd\c@page\else\hbox{}\thispagestyle{empty}\newpage
+\if@twocolumn\hbox{}\newpage\fi\fi\fi}
+
+% kropki dla chapterów
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\l@chapter}
+  {\hfil}
+  {\leaders\hbox{\normalfont$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill}
+  {}{}
+\makeatother
+
+\usepackage{titletoc}
+\makeatletter
+\titlecontents{chapter}% <section-type>
+  [0pt]% <left>
+  {}% <above-code>
+  {\bfseries \thecontentslabel.\quad}% <numbered-entry-format>
+  {\bfseries}% <numberless-entry-format>
+  {\bfseries\leaders\hbox{\normalfont$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill\contentspage}% <filler-page-format>
+
+\titlecontents{section}
+  [1em]
+  {}
+  {\thecontentslabel.\quad}
+  {}
+  {\leaders\hbox{\normalfont$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill\contentspage}
+
+\titlecontents{subsection}
+  [2em]
+  {}
+  {\thecontentslabel.\quad}
+  {}
+  {\leaders\hbox{\normalfont$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill\contentspage}
+\makeatother
+
+% ------------------- Nagłówki rozdziałów ---------------------
+\usepackage{titlesec}
+\titleformat{\chapter}%[display]
+  {\normalfont\Large \bfseries}
+  {\thechapter.}{1ex}{\Large}
+
+\titleformat{\section}
+  {\normalfont\large\bfseries}
+  {\thesection.}{1ex}{}
+\titlespacing{\section}{0pt}{30pt}{20pt} 
+
+\titleformat{\subsection}
+  {\normalfont \bfseries}
+  {\thesubsection.}{1ex}{}
+
+% ---------------------- Listy, tabele, figury ------------------------
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{enumerate}
+\usepackage{color}
+\definecolor{mygreen}{RGB}{28,172,0}
+\definecolor{mylilas}{RGB}{170,55,241}
+\usepackage{epsfig}
+\usepackage{etoolbox}
+
+% -------------------- Definicje, twierdzenia etc. --------------------
+\makeatletter
+\newtheoremstyle{definition}%    % Name
+{3ex}%                          % Space above
+{3ex}%                          % Space below
+{\upshape}%                      % Body font
+{}%                              % Indent amount
+{\bfseries}%                     % Theorem head font
+{.}%                             % Punctuation after theorem head
+{.5em}%                            % Space after theorem head, ' ', or \newline
+{\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}%  % Theorem head spec (can be left empty, meaning `normal')
+\makeatother
+\theoremstyle{definition}
+\newtheorem{theorem}{Twierdzenie}[chapter]
+\newtheorem{lemma}[theorem]{Lemat}
+\newtheorem{example}[theorem]{Przykład}
+\newtheorem{proposition}[theorem]{Stwierdzenie}
+\newtheorem{corollary}[theorem]{Wniosek}
+\newtheorem{definition}[theorem]{Definicja}
+\newtheorem{remark}[theorem]{Uwaga}
+
+\usepackage{wrapfig}
+
+% --------------- Ustawienia strony tytułowej -------------------
+\date{01.04.2022} %ToDo - pamiętać o zmianach daty przy wysyłaniu pracy
+\author{
+Adam Przemysław Chojecki \\ Szymon Tur
+}
+\title{\bf Problem 3SAT \\ $\star\star\star$ \\ Dokumentacja wstępna \par}
+\raggedbottom
+
+\begin{document}
+\maketitle
+
+\pagenumbering{gobble}
+\tableofcontents
+\thispagestyle{empty}
+
+\null\thispagestyle{empty}\newpage
+\pagenumbering{arabic}
+\pagestyle{fancy}
+\setcounter{page}{3}
+
+\chapter{Wstęp}
+
+Niniejszy dokument stanowi dokumentację wstępną projektu, który jest realizowany w ramach przedmiotu Algorytmy Zaawansowane.
+
+\section{Cel zadania}
+Celem zadania jest opracowanie i zaimplementowanie algorytmu rozwiązującego problem 3SAT, czyli sprawdzający spełnialność formuły logicznej w postaci 3-CNF w czasie krótszym niż $\mathcal{O}(2^n + m)$, gdzie $n$ - liczba zmiennych, a $m$ - długość wejścia.
+
+Warto zwrócić uwagę, że proste zastosowanie podstawienia dla każdej zmiennej logicznej obu możliwych wartości (prawda lub fałsz) jest algorytmem, który rozwiązuje ten problem w czasie $\mathcal{O}(2^n + m)$. Celem zadania jest znalezienie bardziej wydajnego algorytmu niż ten naiwny.
+
+Powszechnie wiadomo, że problem 3SAT jest NP-zupełny. Przykładowy dowód tego faktu znaleźć można w \cite{sipser-2009}. Z tego powodu nie podejmowano próby na znalezienie algorytmu wielomianowego. Za cel postawiono znalezienie algorytmu działającego w czasie $\mathcal{O}(\alpha^n + m)$, gdzie $\alpha \in (1,2)$.
+
+Efektem końcowym projektu będzie aplikacja, która implementuje opisany w kolejnych sekcjach algorytm. Dostarczone zostaną pliki w formacie EXE, testowe oraz generator plików wejściowych, wraz z pełną dokumentacją dotyczącą pracy oraz kodu źródłowego.
+
+\section{Opis problemu}\label{sec:opis_problemu}
+
+Rozważamy formuły logiczne w koniunkcyjnej postaci normalnej (CNF). Jest to postać która jest koniunkcją alternatyw. Postać ta w ogólności wygląda następująco:
+\begin{equation}
+\label{eq:CNF}
+(p_{11} \lor p_{12} \lor\dots\lor p_{1k_1})\land (p_{21} \lor p_{22} \lor\dots\lor p_{2k_2})\land\dots\land (p_{l1} \lor p_{l2} \lor\dots\lor p_{lk_l})
+\end{equation}
+gdzie każde $p_{ij}$ jest literałem, czyli albo zmienną zdaniową, albo jej zaprzeczeniem ($p_{ij} = \alpha_{ij}$ albo $p_{ij} = \lnot\alpha_{ij}$, gdize $\alpha_{ij}$ to jakaś zmienna zdaniowa). Każdą formułę logiczną można zapisać równoważnie w postaci (\ref{eq:CNF}).
+
+W ramach tego zadania zostanie rozważona szczególna postać CNF, zwana 3-CNF, gdzie dla wzoru przedstawionego w (\ref{eq:CNF}), podstawiamy $\forall_{i\in {1, \dots , l }}\ k_i = 3$. Postać ta wygląda następująco:
+\begin{equation}
+\label{eq:3CNF}
+(p_{11} \lor p_{12} \lor p_{13})\land (p_{21} \lor p_{22} \lor p_{23})\land\dots\land (p_{l1} \lor p_{l2} \lor p_{l3})
+\end{equation}
+Każda z formuł w postaci CNF może być równoważnie przedstawiona w postaci 3-CNF.
+
+Problem 3SAT polega na sprawdzeniu, czy istnieje takie wartościowanie zmiennych logicznych, żeby podana formuła w postaci 3-CNF była spełniona (prawdziwa).
+
+\begin{example} \hfill
+\begin{enumerate}[(a)]
+    \item Istnieje wartościowanie
+    $$(A\lor B\lor\lnot C)\land (\lnot D\lor E\lor F)$$
+    $A=TRUE, B=TRUE, C=FALSE, D=FALSE, E=TRUE, F=TRUE$
+    \item Każde wartościowanie jest poprawne
+    $$(A\lor A\lor\lnot A)\land (\lnot B\lor B\lor B)$$
+    $A=TRUE, B=TRUE$
+    
+    $A=TRUE, B=FLASE$
+
+    $A=FLASE, B=TRUE$
+    
+    $A=FLASE, B=FLASE$
+    \item Nie istnieje wartościowanie
+    $$(A\lor A\lor A)\land (\lnot A\lor \lnot A\lor \lnot A)$$
+    \item Istnieje dokładnie jedno wartościowanie
+    $$(A\lor A\lor A)\land (\lnot B\lor\lnot B\lor\lnot B)$$
+    $A=TRUE, B=FLASE$
+\end{enumerate}
+\end{example}
+
+
+\chapter{Propozycja rozwiązania}
+
+Rozdział skupia się na przedstawieniu zaprojektowanego algorytmu do rozwiązania problemu opisanego w sekcji \ref{sec:opis_problemu} oraz analizy jego poprawności i złożoności obliczeniowej.
+
+\section{Opis algorytmu}\label{sec:algorytm}
+TODO
+
+\section{Pseudokod}
+
+\vspace{-20pt}
+\begin{algorithm}[H]
+\caption{Szukanie wartościowania dla 3-CNF}\label{alg:3SAT}
+\SetKwBlock{Begin}{Begin}{}
+
+$Z \gets$  empty; $F_s \gets SimplifyFormula(F)$\; % Jeśli w F jest kaluzula (A or A or B), to zamień ją na (A or B).
+
+
+return TODO\;
+\end{algorithm}
+
+\section{Analiza algorytmu}
+
+Analiza algorytmu dotyczy analizy poprawności zaprojektowanego podejścia do rozwiązania problemu rekonstrukcji drzew, a także obliczenia jego złożoności czasowej.
+
+\subsection{Poprawność}
+Pewnie jakoś przez indukcję
+
+\subsection{Złożoność czasowa}
+Złożoność czasowa zostanie określona poprzez maksymalną złożoność obliczeniową algorytmu (złożoność pesymistyczną).
+
+\chapter{Implementacja}
+
+Poprzedni rozdział był poświęcony zaprojektowanemu algorytmowi. Wiadomo zatem jakie zastosowano podejście do rozwiązania problemu 3SAT. Ten rozdział skupia się na przedstawieniu najważniejszych aspektów planowanej implementacji tego rozwiązania.
+
+\section{Aplikacja}
+
+Algorytm zostanie zaimplementowany w formie aplikacji wykonywalnej w formacie pliku EXE. Aplikacja będzie działała na plikach tekstowych, to znaczy, że wejście i wyjście algorytmu będzie zawarte w pliku. Opis struktury przyjmowanych i zwracanych plików znajduje się w sekcji \ref{opis_plikow}. Wraz z algorytmem zostanie dostarczony generator plików wejściowych, aby umożliwić proste użycie aplikacji i pokazanie działania algorytmu bez większego nakładu użytkownika.
+
+Implementacja algorytmu zostanie wykonana w języku C\#. Aplikacja będzie wykorzystywała jedynie podstawowe funkcje języka do prostych operacji w algorytmie, natomiast kluczowe części algorytmu zostaną napisane samodzielnie przez twórców.
+
+Nadrzędnym wymaganiem dla aplikacji jest prostota zrozumienia dla użytkownika. Oznacza to, że użytkownik powinien wiedzieć, co aktualnie dzieje się w aplikacji lub co powinien zrobić w danym momencie. Aplikacja będzie również odporna na wprowadzenie błędnych danych (złego pliku wejściowego). Dzięki temu, że będzie dostarczona jako plik EXE, nie będzie wymagała od użytkownika dodatkowych instalacji środowiska do jej uruchomienia.
+
+\section{Opis wejścia i wyjścia}\label{opis_plikow}
+
+Aplikacja będzie przyjmować dane w postaci pliku w formacie TXT i zwracać wynik również w postaci pliku TXT. W przypadku, gdy istnieje wartościowanie, wynik zostanie zapisany w pliku TXT wraz z tym przykładowym wartościowaniem. Natomiast w przypadku braku takiego wartościowania, aplikacja zapisze tą informację w pliku wyjściowym. W obu przypadkach informacja o istnieniu lub nie wartościowania będzie wypisana na ekranie.
+
+W przypadku podania błędnego wejścia aplikacja poinformuje o tym użytkownika i poczeka na podanie nowego pliku wejściowego.
+
+Przykład poprawnego pliku wejściowego podano na przykładzie \ref{exp:przyklad_wejscia}.
+
+\begin{example} \hfill
+
+\centering \verb=(A | A | A) & (-B | -B | -B)=
+
+\label{exp:przyklad_wejscia}
+\end{example}
+
+Algorytm, jeśli dane będą poprawne, sprawdzi, czy istnieje jakieś wartościowanie dające prawdę. Jeśli nie, to wypisze do pliku odpowiedź negatywną. Jeśli tak, to wypisze do pliku odpowiedź pozytywną oraz znalezione wartościowanie - tak jak na przykładzie \ref{exp:przyklad_wyjscia}.
+
+\begin{example} \hfill
+
+\centering \verb|YES, A=TRUE, B=FALSE|
+\label{exp:przyklad_wyjscia}
+\end{example}
+
+\clearpage
+\pagestyle{empty}
+\pagenumbering{gobble}
+\printbibliography
+
+\end{document}
