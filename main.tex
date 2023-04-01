@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt,twoside]{report}
+\documentclass[a4paper,10pt,twoside]{report}
 
 \usepackage{comment}
 \usepackage{float}
@@ -24,7 +24,7 @@
 \usepackage{csquotes}
 
 % --------------------- Bibliografia ---------------------------
-\usepackage[style=authoryear-ibid,backend=biber]{biblatex}
+\usepackage[style=numeric-comp,backend=biber]{biblatex}
 \addbibresource{bibliografia.bib} % zmienić nazwę jak będzie plik już konkretny
 \usepackage{biblatex}
 \usepackage[hidelinks]{hyperref}
@@ -148,7 +148,7 @@
 \usepackage{wrapfig}
 
 % --------------- Ustawienia strony tytułowej -------------------
-\date{01.04.2022} %ToDo - pamiętać o zmianach daty przy wysyłaniu pracy
+\date{\today} %ToDo - pamiętać o zmianach daty przy wysyłaniu pracy
 \author{
 Adam Przemysław Chojecki \\ Szymon Tur
 }
@@ -198,6 +198,8 @@ Każda z formuł w postaci CNF może być równoważnie przedstawiona w postaci 
 
 Problem 3SAT polega na sprawdzeniu, czy istnieje takie wartościowanie zmiennych logicznych, żeby podana formuła w postaci 3-CNF była spełniona (prawdziwa).
 
+Na potrzeby algorytmu będziemy dopuszczali na wejściu także klauzule składające się z mniej niż trzech literałów, w szczególności klauzulę pustą (zawsze fałszywą).
+
 \begin{example} \hfill
 \begin{enumerate}[(a)]
     \item Istnieje wartościowanie
@@ -207,53 +209,194 @@ Problem 3SAT polega na sprawdzeniu, czy istnieje takie wartościowanie zmiennych
     $$(A\lor A\lor\lnot A)\land (\lnot B\lor B\lor B)$$
     $A=TRUE, B=TRUE$
     
-    $A=TRUE, B=FLASE$
+    $A=TRUE, B=FALSE$
 
-    $A=FLASE, B=TRUE$
+    $A=FALSE, B=TRUE$
     
-    $A=FLASE, B=FLASE$
+    $A=FALSE, B=FALSE$
     \item Nie istnieje wartościowanie
     $$(A\lor A\lor A)\land (\lnot A\lor \lnot A\lor \lnot A)$$
     \item Istnieje dokładnie jedno wartościowanie
     $$(A\lor A\lor A)\land (\lnot B\lor\lnot B\lor\lnot B)$$
-    $A=TRUE, B=FLASE$
+    $A=TRUE, B=FALSE$
 \end{enumerate}
 \end{example}
 
 
 \chapter{Propozycja rozwiązania}
 
-Rozdział skupia się na przedstawieniu zaprojektowanego algorytmu do rozwiązania problemu opisanego w sekcji \ref{sec:opis_problemu} oraz analizy jego poprawności i złożoności obliczeniowej.
+Rozdział skupia się na przedstawieniu zaprojektowanego algorytmu do rozwiązania problemu opisanego w~sekcji \ref{sec:opis_problemu} oraz analizy jego poprawności i złożoności obliczeniowej.
 
 \section{Opis algorytmu}\label{sec:algorytm}
-TODO
+
+Jeśli formuła jest pusta, to znaczy, że jest ona spełnialna i zwracany jest zbiór pusty.
+
+W przeciwnym wypadku algorytm działa rekurencyjnie.
+
+Na początku formuła jest upraszczana poprzez usunięcie klauzul zawierających powtarzające się literały.
+
+Następnie wyszukiwana jest najmniejsza klauzula. W przypadku gdy jest ona pusta, oznacza to, że nie da się jej spełnić, a więc cała formuła jest niespełnialna i zwracana jest wartość logiczna "False".
+
+Jeśli najmniejsza klauzula składa się z jednego literału, to algorytm ustawia go na odpowiednią wartość logiczną dla spełnienia literału. Następnie rekurencyjnie rozwiązuje podproblem, w którym wartość tego literału jest ustalona na "True". Jeśli podproblem jest spełnialny, to do rozwiązania formuły dodawany jest fakt, że ten literał musi być prawdziwy. Jeśli podproblem nie jest spełnialny, to algorytm zwraca "False".
+
+Jeśli najmniejsza klauzula składa się z dwóch literałów, to algorytm działa w 2 krokach. Wywołuje podproblem, w którym pierwszy z nich jest prawdziwy - w przypadku pozytywnego rozwiązania podproblemu, algorytm zwraca podrozwiązanie powiększone o odpowiednią wartość tego literału. W przypadku negatywnego rozwiązania, algorytm ustawia wartość pierwszego na fałsz oraz drugiego na prawdę. Następnie w przypadku sukcesu podobnie zwraca podrozwiązanie powiększone o te 2 wartości logiczne. W przypadku porażki solvera podproblemu, algorytm zwraca Fałsz.
+
+Jeśli najmniejsza klauzula ma rozmiar 3, algorytm postępuje podobnie jak w przypadku klauzuli o rozmiarze 2, tylko tym razem rekurencyjnie rozwiązuje trzy podproblemy. Są to podproblemy typu (True), (False, True), (False, False, True). Jeśli któryś z tych podproblemów jest spełnialny, to do rozwiązania podformuły dodawane są odpowiednie wartości.
+
+Bardziej techniczny opis algorytmu znajduje się w pseudokodzie w rozdziale \ref{sec:pseudokod}.
 
 \section{Pseudokod}
+\label{sec:pseudokod}
 
 \vspace{-20pt}
 \begin{algorithm}[H]
 \caption{Szukanie wartościowania dla 3-CNF}\label{alg:3SAT}
 \SetKwBlock{Begin}{Begin}{}
 
-$Z \gets$  empty; $F_s \gets SimplifyFormula(F)$\; % Jeśli w F jest kaluzula (A or A or B), to zamień ją na (A or B).
+SAT3Solver(F):
 
+\Begin{
+    $F_s \gets SimplifyFormula(F)$\; % Jeśli w F jest klauzulą (A or A or B), to zamień ją na (A or B).
+    \If{$IsEmpty(F_s)$}
+    {
+        return \{\}\;
+    }
+    $C_{min} \gets FindSmallestClause(F_s)$\;
+    
+    \If{$size(C_{min}) = 0$}
+    {
+        return False\;
+    }
+    \If{$size(C_{min}) = 1$}
+    {
+        $(p) \gets C_{min}$\;
+        
+        $F_n \gets SetVariables(F_s, p = True)$\;
 
-return TODO\;
+        $recursive\_result \gets SAT3Solver(F_n)$\;
+
+        \If{$recursive\_result \ne False$}
+        {
+            return $recursive\_result \cup \{p = True\}$\;
+        }
+        return False\;
+    }
+    \If{$size(C_{min}) = 2$}
+    {
+        $(p\lor q) \gets C_{min}$\;
+        
+        $F_n \gets SetVariables(F_s, p = True)$\;
+
+        $recursive\_result \gets SAT3Solver(F_n)$\;
+
+        \If{$recursive\_result \ne False$}
+        {
+            return $recursive\_result \cup \{p = True\}$\;
+        }
+
+        $F_n \gets SetVariables(F_s, p = False, q = True)$\;
+
+        $recursive\_result \gets SAT3Solver(F_n)$\;
+
+        \If{$recursive\_result \ne False$}
+        {
+            return $recursive\_result \cup \{p = False, q = True\}$\;
+        }
+        
+        return False\;
+    }
+    \If{$size(C_{min}) = 3$}
+    {
+        $(p\lor q\lor r) \gets C_{min}$\;
+        
+        $F_n \gets SetVariables(F_s, p = True)$\;
+
+        $recursive\_result \gets SAT3Solver(F_n)$\;
+
+        \If{$recursive\_result \ne False$}
+        {
+            return $recursive\_result \cup \{p = True\}$\;
+        }
+
+        $F_n \gets SetVariables(F_s, p = False, q = True)$\;
+
+        $recursive\_result \gets SAT3Solver(F_n)$\;
+
+        \If{$recursive\_result \ne False$}
+        {
+            return $recursive\_result \cup \{p = False, q = True\}$\;
+        }
+
+        $F_n \gets SetVariables(F_s, p = False, q = False, r = True)$\;
+
+        $recursive\_result \gets SAT3Solver(F_n)$\;
+
+        \If{$recursive\_result \ne False$}
+        {
+            return $recursive\_result \cup \{p = False, q = False, r = True\}$\;
+        }
+        
+        return False\;
+    }
+}
 \end{algorithm}
 
 \section{Analiza algorytmu}
 
-Analiza algorytmu dotyczy analizy poprawności zaprojektowanego podejścia do rozwiązania problemu rekonstrukcji drzew, a także obliczenia jego złożoności czasowej.
+Analiza algorytmu dotyczy analizy poprawności zaprojektowanego podejścia do rozwiązania problemu 3SAT, a także obliczenia jego złożoności czasowej.
 
 \subsection{Poprawność}
-Pewnie jakoś przez indukcję
+
+Udowodnimy poprawność algorytmu indukcyjnie, z uwagi na liczbę klauzul w formule. 
+
+Niech $\Phi$ będzie formułą składającą się z jednej klauzuli zawierającej co najwyżej trzy literały. Jeśli jest pusta, to nie jest ona spełnialna. W przeciwnym wypadku jest spełnialna. Ustawiając wartość dowolnej zmiennej występującej w klauzuli tak, aby co najmniej jeden literał z nią związany był prawdziwy, uzyskamy wartościowanie spełniające $\Phi$. Zatem, Algorytm \ref{alg:3SAT} zadziała poprawnie dla formuły o jednej klauzuli.
+
+Niech teraz $\Phi$ będzie formułą składającą się z więcej niż jednej klauzuli. Wybierzmy  klauzulę z najmniejszą liczbą literałów z $\Phi$. Jeśli jest ona pusta, to $\Phi$ nie jest spełnialna. W przeciwnym wypadku, oznaczmy literały tej klauzuli przez $p,q,r$. Jeśli klauzula zawiera 1 lub 2 literały, to w dalszych rozważaniach przyjmujemy odpowiednio $r=FALSE$ lub $q=r=FALSE$. Przedstawmy $\Phi$ w postaci
+\begin{equation}
+    \Phi \equiv (p\vee q\vee r) \wedge \Phi',
+\end{equation}
+gdzie formuła $\Phi'$ ma mniej klauzul niż $\Phi$. Korzystając z tożsamości
+\begin{equation}
+    (p\vee q\vee r) \wedge \Phi' \equiv (p \wedge \Phi') \vee (\neg p \wedge q \wedge \Phi') \vee (\neg p\wedge \neg q\wedge r \wedge \Phi')
+\end{equation}
+wnioskujemy, że $\Phi$ jest spełnialna wtedy i tylko wtedy, gdy istnieje wartościowanie spełniające jedną z trzech poniższych formuł:
+\begin{itemize}
+    \item $\Phi'$, w której wszystkie klauzule zawierające $p$ zostały usunięte, a z pozostałych klauzuli usunięto $\neg p$, oraz $p=TRUE$,
+    \item $\Phi'$, w której wszystkie klauzule zawierające $\neg p$ lub $q$ zostały usunięte, a z pozostałych klauzuli usunięto $p$ i $\neg q$, oraz $p=FALSE, q=TRUE$,
+    \item $\Phi'$, w której wszystkie klauzule zawierające $\neg p$, $\neg q$ lub $r$ zostały usunięte, a z pozostałych klauzuli usunięto $p$, $q$ i $\neg r$, oraz $p=FALSE, q=FALSE, r=TRUE$.
+\end{itemize}
+Każda z tych trzech formuł ma nie większą liczbę klauzuli co $\Phi'$, zatem, korzystając z założenia indukcyjnego i~biorąc wyniki Algorytmu \ref{alg:3SAT} dla tych trzech formuł, możemy stwierdzić, czy formuła $\Phi$ jest spełnialna i jeśli tak, zwrócić wartościowanie spełniające. Kończy to dowód poprawności Algorytmu \ref{alg:3SAT}.
 
 \subsection{Złożoność czasowa}
 Złożoność czasowa zostanie określona poprzez maksymalną złożoność obliczeniową algorytmu (złożoność pesymistyczną).
 
+Zauważmy, że czas wykonania Algorytmu \ref{alg:3SAT} spełnia następujące równanie rekurencyjne:
+\begin{equation}
+\label{eq:rek}
+    T(n) = T(n-1)+T(n-2)+T(n-3)+O(n).
+\end{equation}
+
+Wiadomo, że aby rozwiązać równanie \eqref{eq:rek}, należy rozwiązać równanie charakterystyczne
+\begin{equation}
+\label{eq:charakt}
+    x^3=x^2+x+1.
+\end{equation}
+Niech $x_M$ będzie największym pierwiastkiem rzeczywistym równania \eqref{eq:charakt}. Wiadomo wówczas, że $T(n)=O(nx_M^n)$. Przybliżona wartość $x_M$ to $1,84$, zatem pesymistyczna złożoność czasowa Algorytmu \ref{alg:3SAT} wynosi
+\begin{equation}
+\label{eq:zlozonosc}
+T(n)=O(n\cdot 1,84^n).
+\end{equation}
+
+Pokażemy teraz, że Algorytm \ref{alg:3SAT} spełnia wymagania zadania, czyli że $T(n)=o(2^n)$. Wystarczy w tym celu wykazać, że dla każdego $\alpha\in(1,2)$ zachodzi $n\alpha^n=o(2^n)$.
+Zauważmy, że 
+\begin{equation*}
+    \lim_{n\to\infty}\frac{n\alpha^n}{2^n} = \lim_{n\to\infty}\frac{n}{\left(\frac{2}{\alpha}\right)^n}=0,
+\end{equation*}
+ponieważ $\frac{2}{\alpha} > 1$ oraz $n=o\left(\left(\frac{2}{\alpha}\right)^n\right)$. Zatem, istotnie, $T(n)=o(2^n)$.
+
 \chapter{Implementacja}
 
-Poprzedni rozdział był poświęcony zaprojektowanemu algorytmowi. Wiadomo zatem jakie zastosowano podejście do rozwiązania problemu 3SAT. Ten rozdział skupia się na przedstawieniu najważniejszych aspektów planowanej implementacji tego rozwiązania.
+Poprzedni rozdział był poświęcony zaprojektowanemu algorytmowi. Wiadomo zatem, jakie zastosowano podejście do rozwiązania problemu 3SAT. Ten rozdział skupia się na przedstawieniu najważniejszych aspektów planowanej implementacji tego rozwiązania.
 
 \section{Aplikacja}
 
@@ -269,11 +412,17 @@ Aplikacja będzie przyjmować dane w postaci pliku w formacie TXT i zwracać wyn
 
 W przypadku podania błędnego wejścia aplikacja poinformuje o tym użytkownika i poczeka na podanie nowego pliku wejściowego.
 
-Przykład poprawnego pliku wejściowego podano na przykładzie \ref{exp:przyklad_wejscia}.
+Plik wejściowy w pierwszym wierszu zawiera liczbę zmiennych w formule $k$ i liczbę klauzul $m$. Następnie, w kolejnych $m$ wierszach będą znajdowały się 3 liczby całkowite oznaczające literały: liczba dodatnia i ujemna oznaczają odpowiednio niezanegowaną i zanegowaną zmienną. Przykład poprawnego pliku wejściowego podano na przykładzie \ref{exp:przyklad_wejscia}.
 
 \begin{example} \hfill
 
-\centering \verb=(A | A | A) & (-B | -B | -B)=
+%\centering \verb=(A | A | A) & (-B | -B | -B)=
+\begin{verbatim}
+2 3
+1 1 1
+-2 -2 -2
+2 -1 1
+\end{verbatim}
 
 \label{exp:przyklad_wejscia}
 \end{example}
@@ -282,7 +431,7 @@ Algorytm, jeśli dane będą poprawne, sprawdzi, czy istnieje jakieś wartościo
 
 \begin{example} \hfill
 
-\centering \verb|YES, A=TRUE, B=FALSE|
+\centering \verb|YES, 1=TRUE, 2=FALSE|
 \label{exp:przyklad_wyjscia}
 \end{example}
 
