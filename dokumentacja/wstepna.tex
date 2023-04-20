@@ -202,10 +202,10 @@ Na potrzeby algorytmu będziemy dopuszczali na wejściu także klauzule składaj
 
 \begin{example} \hfill
 \begin{enumerate}[(a)]
-    \item Istnieje wartościowanie
+    \item Istnieje wartościowanie spełniające
     $$(A\lor B\lor\lnot C)\land (\lnot D\lor E\lor F)$$
     $A=TRUE, B=TRUE, C=FALSE, D=FALSE, E=TRUE, F=TRUE$
-    \item Każde wartościowanie jest poprawne
+    \item Każde wartościowanie jest spełniające
     $$(A\lor A\lor\lnot A)\land (\lnot B\lor B\lor B)$$
     $A=TRUE, B=TRUE$
     
@@ -214,9 +214,9 @@ Na potrzeby algorytmu będziemy dopuszczali na wejściu także klauzule składaj
     $A=FALSE, B=TRUE$
     
     $A=FALSE, B=FALSE$
-    \item Nie istnieje wartościowanie
+    \item Nie istnieje wartościowanie spełniające
     $$(A\lor A\lor A)\land (\lnot A\lor \lnot A\lor \lnot A)$$
-    \item Istnieje dokładnie jedno wartościowanie
+    \item Istnieje dokładnie jedno wartościowanie spełniające
     $$(A\lor A\lor A)\land (\lnot B\lor\lnot B\lor\lnot B)$$
     $A=TRUE, B=FALSE$
 \end{enumerate}
@@ -233,7 +233,7 @@ Jeśli formuła jest pusta, to znaczy, że jest ona spełnialna i zwracany jest 
 
 W przeciwnym wypadku algorytm działa rekurencyjnie.
 
-Na początku formuła jest upraszczana poprzez usunięcie klauzul zawierających powtarzające się literały.
+Na początku formuła jest upraszczana poprzez upraszczanie klauzul zawierających powtarzające się literały. Np. formuła $(A \lor A \lor B) \land (\lnot B \lor \lnot A \lor \lnot B)$ upraszczana jest do postaci $(A \lor B) \land (\lnot B \lor \lnot A)$.
 
 Następnie wyszukiwana jest najmniejsza klauzula. W przypadku gdy jest ona pusta, oznacza to, że nie da się jej spełnić, a więc cała formuła jest niespełnialna i zwracana jest wartość logiczna "False".
 
@@ -351,7 +351,7 @@ Udowodnimy poprawność algorytmu indukcyjnie, z uwagi na liczbę klauzul w form
 
 Niech $\Phi$ będzie formułą składającą się z jednej klauzuli zawierającej co najwyżej trzy literały. Jeśli jest pusta, to nie jest ona spełnialna. W przeciwnym wypadku jest spełnialna. Ustawiając wartość dowolnej zmiennej występującej w klauzuli tak, aby co najmniej jeden literał z nią związany był prawdziwy, uzyskamy wartościowanie spełniające $\Phi$. Zatem, Algorytm \ref{alg:3SAT} zadziała poprawnie dla formuły o jednej klauzuli.
 
-Niech teraz $\Phi$ będzie formułą składającą się z więcej niż jednej klauzuli. Wybierzmy  klauzulę z najmniejszą liczbą literałów z $\Phi$. Jeśli jest ona pusta, to $\Phi$ nie jest spełnialna. W przeciwnym wypadku, oznaczmy literały tej klauzuli przez $p,q,r$. Jeśli klauzula zawiera 1 lub 2 literały, to w dalszych rozważaniach przyjmujemy odpowiednio $r=FALSE$ lub $q=r=FALSE$. Przedstawmy $\Phi$ w postaci
+Niech teraz $\Phi$ będzie formułą składającą się z więcej niż jednej klauzuli. Wybierzmy  klauzulę z najmniejszą liczbą literałów z $\Phi$. Jeśli jest ona pusta, to $\Phi$ nie jest spełnialna. W przeciwnym wypadku, oznaczmy literały tej klauzuli przez $p,q,r$. Jeśli klauzula zawiera 1 lub 2 literały, to w dalszych rozważaniach przyjmujemy odpowiednio $q=r=FALSE$ lub $r=FALSE$. Przedstawmy $\Phi$ w postaci
 \begin{equation}
     \Phi \equiv (p\vee q\vee r) \wedge \Phi',
 \end{equation}
@@ -427,11 +427,13 @@ Plik wejściowy w pierwszym wierszu zawiera liczbę zmiennych w formule $k$ i li
 \label{exp:przyklad_wejscia}
 \end{example}
 
-Algorytm, jeśli dane będą poprawne, sprawdzi, czy istnieje jakieś wartościowanie dające prawdę. Jeśli nie, to wypisze do pliku odpowiedź negatywną. Jeśli tak, to wypisze do pliku odpowiedź pozytywną oraz znalezione wartościowanie - tak jak na przykładzie \ref{exp:przyklad_wyjscia}.
+Algorytm, jeśli dane będą poprawne, sprawdzi, czy istnieje jakieś wartościowanie dające prawdę. Jeśli nie, to wypisze do pliku odpowiedź negatywną \verb|NO|. Jeśli tak, to wypisze do pliku odpowiedź pozytywną \verb|YES| oraz w następnej linijce znalezione wartościowanie - tak jak na przykładzie \ref{exp:przyklad_wyjscia}.
 
 \begin{example} \hfill
 
-\centering \verb|YES, 1=TRUE, 2=FALSE|
+\noindent
+\verb|YES| \\
+\verb|1=TRUE, 2=FALSE|
 \label{exp:przyklad_wyjscia}
 \end{example}
 

@@ -8,13 +8,13 @@ namespace _3SATSolverLib
 {
     public class Clause
     {
-        List<Literal> literals = new List<Literal>();
+        private readonly List<Literal> _literals = new List<Literal>();
 
-        public int MaxVariableIndex => literals.Select(l => l.VariableNumber).Max();
+        public int MaxVariableIndex => _literals.Select(l => l.VariableNumber).Max();
 
-        public int Count => literals.Count;
+        public int Count => _literals.Count;
 
-        public void AddLiteral(Literal literal) => literals.Add(literal);
-        public bool RemoveLiteral(Literal literal) => literals.Remove(literal);
+        public void AddLiteral(Literal literal) => _literals.Add(literal);
+        public bool RemoveLiteral(Literal literal) => _literals.Remove(literal);
     }
 }

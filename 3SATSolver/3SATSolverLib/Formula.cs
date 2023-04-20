@@ -2,12 +2,12 @@
 {
     public class Formula
     {
-        List<Clause> clauses = new List<Clause>();
-        public int MaxVariableIndex => clauses.Select(c => c.MaxVariableIndex).Max();
-        public int ClauseCount => clauses.Count;
+        private readonly List<Clause> _clauses = new List<Clause>();
+        public int MaxVariableIndex => _clauses.Select(c => c.MaxVariableIndex).Max();
+        public int ClauseCount => _clauses.Count;
 
-        public void AddClause(Clause clause) => clauses.Add(clause);
-        public bool RemoveClause(Clause clause) => clauses.Remove(clause);
+        public void AddClause(Clause clause) => _clauses.Add(clause);
+        public bool RemoveClause(Clause clause) => _clauses.Remove(clause);
 
         public Assignment[]? Solve()
         {

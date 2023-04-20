@@ -13,6 +13,7 @@ namespace _3SATSolverLib
             VariableNumber = variableNumber;
             Negated = negated;
         }
+
         public int VariableNumber { get; }
         public bool Negated { get; }
     }
