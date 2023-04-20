@@ -8,6 +8,11 @@ namespace _3SATSolverLib
 {
     public struct Literal
     {
+        public Literal(int variableNumber, bool negated)
+        {
+            VariableNumber = variableNumber;
+            Negated = negated;
+        }
         public int VariableNumber { get; }
         public bool Negated { get; }
     }
