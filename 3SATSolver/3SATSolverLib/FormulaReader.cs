@@ -78,12 +78,12 @@ namespace _3SATSolverLib
 
     public static class SolutionWriter
     {
-        public static void WriteToFile(string filename)
+        public static void WriteToFile(string filename, Formula formula)
         {
             throw new NotImplementedException();
         }
 
-        public static void WriteToConsole()
+        public static void WriteToConsole(Formula formula)
         {
             throw new NotImplementedException();
         }

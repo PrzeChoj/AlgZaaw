@@ -8,3 +8,4 @@ else
 
 var result = formula.Solve();
 
+SolutionWriter.WriteToConsole(formula);

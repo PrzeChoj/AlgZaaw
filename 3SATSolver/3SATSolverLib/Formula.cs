@@ -25,7 +25,14 @@
 
         private bool AssignSolution(Assignment[] assignments)
         {
-            throw new NotImplementedException();
+            // TODO()
+
+            for (int i = 0; i < MaxVariableIndex; i++)
+            {
+                assignments[i] = Assignment.True;
+            }
+
+            return true;
         }
     }
 }
