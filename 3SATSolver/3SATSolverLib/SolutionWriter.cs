@@ -45,7 +45,7 @@ namespace _3SATSolverLib
 
             for (int i = 0; i < formula.MaxVariableIndex; i++)
             {
-                solutions[i] = i.ToString() + "=" + formula.Solution[i];
+                solutions[i] = (i + 1).ToString() + "=" + formula.Solution[i];
             }
 
             string solution = string.Join(", ", solutions);
