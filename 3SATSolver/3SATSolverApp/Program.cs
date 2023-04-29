@@ -6,6 +6,6 @@ if (args.Length > 0)
 else
     formula = FormulaReader.ReadFromConsole();
 
-var result = formula.Solve();
+formula.Solve();
 
 SolutionWriter.WriteToConsole(formula);
