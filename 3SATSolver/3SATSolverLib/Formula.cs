@@ -12,14 +12,12 @@
         public Assignment[]? Solve()
         {
             Assignment[] result = new Assignment[MaxVariableIndex];
-            if (AssignSolution(result))
-                return result;
-            return null;
+            return AssignSolution(result) ? result : null;
         }
 
-        public bool AssignSolution(Assignment[] assignments)
+        private bool AssignSolution(Assignment[] assignments)
         {
-            return false;
+            throw new NotImplementedException();
         }
     }
 }

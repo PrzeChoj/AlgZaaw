@@ -22,13 +22,13 @@ namespace _3SATSolverLib
             int clauses = int.Parse(split[1]);
 
             Formula formula = new Formula();
-            for (int i=1; i<=clauses; i++)
+            for (int i = 1; i <= clauses; i++)
             {
                 Clause c = new Clause();
                 string[] spl = lines[i].Split(' ');
                 if(spl.Length != 3)
                     throw new ArgumentException($"Wrong Clause {i}");
-                for (int j=0; j<spl.Length; ++j)
+                for (int j = 0; j < spl.Length; ++j)
                 {
                     int num = int.Parse(spl[j]);
                     c.AddLiteral(new Literal(Math.Abs(num), num < 0));
