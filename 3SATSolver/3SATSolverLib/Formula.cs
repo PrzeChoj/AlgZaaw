@@ -36,12 +36,28 @@
             return true;
         }
         
-        private static List<Clause> _setVariables(List<Clause> clauses, Assignment assignment, int indexOdAssignment)
+        private static List<Clause> _setVariable(List<Clause> clauses, Assignment assignment, int indexOdAssignment)
+        {
+            // Will delete a variable from clauses appropriately:
+            // Exp: _setVariables( (x1 or x2 or x3) and (not x2 or not x3 or x4), True, 2) = (not x3 or x4)
+
+            return clauses.Select(clause => _setVariableSingle(clause, assignment, indexOdAssignment)).Where(clauseVariableAssigned => clauseVariableAssigned.Count > 0).ToList();
+        }
+
+        private static Clause _setVariableSingle(Clause clause, Assignment assignment, int indexOdAssignment)
         {
             throw new NotImplementedException();
         }
-
+        
         private static List<Clause> _simplifyClauses(List<Clause> clauses)
+        {
+            // Will simplify 3 things in every clause:
+            // Exp: _simplifyClauses( (x1 or x1 or x2) and (not x1 or not x2 or not x2) and (x1 or x2 or not x1) ) = (x1  or x2) and (not x1 or not x2)
+
+            return clauses.Select(_simplifyClause).Where(simplifiedClause => simplifiedClause.Count > 0).ToList();
+        }
+
+        private static Clause _simplifyClause(Clause clause)
         {
             throw new NotImplementedException();
         }
