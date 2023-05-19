@@ -18,12 +18,13 @@
                 return Solution;
             
             Assignment[] result = new Assignment[MaxVariableIndex];
-            Solution = AssignSolution(result) ? result : null;
+            List<Clause> clausesSimplified = _simplifyClauses(_clauses);
+            Solution = AssignSolution(clausesSimplified, result) ? result : null;
             IsSolved = true;
             return Solution;
         }
 
-        private bool AssignSolution(Assignment[] assignments)
+        private bool AssignSolution(List<Clause> clauses, Assignment[] assignments)
         {
             // TODO()
 
@@ -33,6 +34,16 @@
             }
 
             return true;
+        }
+        
+        private static List<Clause> _setVariables(List<Clause> clauses, Assignment assignment, int indexOdAssignment)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static List<Clause> _simplifyClauses(List<Clause> clauses)
+        {
+            throw new NotImplementedException();
         }
     }
 }
