@@ -16,5 +16,10 @@ namespace _3SATSolverLib
 
         public int VariableNumber { get; }
         public bool Negated { get; }
+
+        internal Literal Copy()
+        {
+            return new Literal(VariableNumber, Negated);
+        }
     }
 }
