@@ -21,5 +21,17 @@ namespace _3SATSolverLib
         {
             return new Literal(VariableNumber, Negated);
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || GetType() != obj.GetType()) return false;
+            Literal l = (Literal)obj;
+            return VariableNumber == l.VariableNumber && Negated == l.Negated;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(VariableNumber, Negated);
+        }
     }
 }

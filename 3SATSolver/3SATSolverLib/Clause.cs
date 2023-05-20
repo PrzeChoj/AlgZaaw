@@ -17,7 +17,7 @@ namespace _3SATSolverLib
         public void AddLiteral(Literal literal) => _literals.Add(literal);
         public bool RemoveLiteral(Literal literal) => _literals.Remove(literal);
 
-        public bool ContainLiteral(Literal literal) => _literals.Contains(literal); // TODO(Upewnic sie, ze dziala to na porownaniach zawartosci, a nie indeksow w pamieci)
+        public bool ContainLiteral(Literal literal) => _literals.Contains(literal);
 
         public Clause Copy()
         {
