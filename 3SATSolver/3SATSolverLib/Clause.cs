@@ -19,6 +19,8 @@ namespace _3SATSolverLib
 
         public bool ContainLiteral(Literal literal) => _literals.Contains(literal);
 
+        public Literal[] GetLiterals() => _literals.ToArray();
+
         public Clause Copy()
         {
             Clause copyClause = new Clause();
@@ -57,5 +59,7 @@ namespace _3SATSolverLib
             
             return outList;
         }
+
+        
     }
 }

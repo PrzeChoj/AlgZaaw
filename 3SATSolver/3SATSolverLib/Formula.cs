@@ -1,65 +1,146 @@
-﻿namespace _3SATSolverLib
+﻿using System.Security.Cryptography;
+using System.Text;
+
+namespace _3SATSolverLib
 {
     public class Formula
     {
         private readonly List<Clause> _clauses = new List<Clause>();
         public Assignment[]? Solution { get; private set; } = null;
         public bool IsSolved { get; private set; } = false;
-        
-        public int MaxVariableIndex => _clauses.Select(c => c.MaxVariableIndex).Max();
+
+        public int MaxVariableIndex => _clauses.Count == 0 ? 0 : _clauses.Select(c => c.MaxVariableIndex).Max();
+        public int VariableCount { get; }
         public int ClauseCount => _clauses.Count;
 
         public void AddClause(Clause clause) => _clauses.Add(clause);
         public bool RemoveClause(Clause clause) => _clauses.Remove(clause);
 
+        public Formula(int variables)
+        {
+            VariableCount = variables;
+        }
+
         public Assignment[]? Solve()
         {
             if (IsSolved)
                 return Solution;
-            
-            Assignment[] result = new Assignment[MaxVariableIndex];
+
+            Assignment[] result = new Assignment[VariableCount];
             List<Clause> clausesSimplified = _simplifyClauses(_clauses);
             Solution = AssignSolution(clausesSimplified, result) ? result : null;
             IsSolved = true;
+
+            if (Solution != null)
+            {
+                for (int i = 0; i < result.Length; ++i)
+                    if (result[i] == Assignment.Unassigned)
+                        result[i] = Assignment.True;
+            }
+
             return Solution;
         }
 
         private bool AssignSolution(List<Clause> clauses, Assignment[] assignments)
         {
-            // TODO()
+            if (clauses.Count == 0)
+                return true;
 
-            for (int i = 0; i < MaxVariableIndex; i++)
+            Clause current = FindSmallestClause(clauses);
+
+            if (current.Count == 0)
+                return false;
+
+            var literals = current.GetLiterals();
+
+            switch (literals.Length)
             {
-                assignments[i] = Assignment.True;
-            }
+                case 1:
+                    {
+                        int i = literals[0].VariableNumber;
+                        assignments[i] = literals[0].Negated ? Assignment.False : Assignment.True;
+                        var newClauses = _setVariable(clauses, assignments[i], i);
+                        return AssignSolution(newClauses, assignments);
+                    }
+                case 2:
+                    {
+                        int i = literals[0].VariableNumber;
+                        int j = literals[1].VariableNumber;
+                        assignments[i] = literals[0].Negated ? Assignment.False : Assignment.True;
+                        var newClauses = _setVariable(clauses, assignments[i], i);
+                        if (AssignSolution(newClauses, assignments))
+                            return true;
 
-            return true;
+                        assignments[i] = literals[0].Negated ? Assignment.True : Assignment.False;
+                        assignments[j] = literals[1].Negated ? Assignment.False : Assignment.True;
+                        newClauses = _setVariable(clauses, assignments[i], i);
+                        return AssignSolution(newClauses, assignments);
+                    }
+                case 3:
+                    {
+                        int i = literals[0].VariableNumber;
+                        int j = literals[1].VariableNumber;
+                        int k = literals[2].VariableNumber;
+                        assignments[i] = literals[0].Negated ? Assignment.False : Assignment.True;
+                        var newClauses = _setVariable(clauses, assignments[i], i);
+                        if (AssignSolution(newClauses, assignments))
+                            return true;
+
+                        assignments[i] = literals[0].Negated ? Assignment.True : Assignment.False;
+                        assignments[j] = literals[1].Negated ? Assignment.False : Assignment.True;
+                        newClauses = _setVariable(clauses, assignments[i], i);
+                        if (AssignSolution(newClauses, assignments))
+                            return true;
+
+                        assignments[i] = literals[0].Negated ? Assignment.True : Assignment.False;
+                        assignments[j] = literals[1].Negated ? Assignment.True : Assignment.False;
+                        assignments[k] = literals[2].Negated ? Assignment.False : Assignment.True;
+                        return AssignSolution(newClauses, assignments);
+                    }
+                default:
+                    throw new InvalidDataException("Clause contains more than 3 literals");
+            }
         }
-        
+
+        private Clause FindSmallestClause(List<Clause> clauses)
+        {
+            int minCount = int.MaxValue;
+            Clause? minClause = null;
+            foreach (var c in clauses)
+            {
+                if (c.Count < minCount)
+                {
+                    minCount = c.Count;
+                    minClause = c;
+                }
+            }
+            return minClause!;
+        }
+
         private static List<Clause> _setVariable(List<Clause> clauses, Assignment assignment, int indexOfAssignment)
         {
             // Will delete a variable from clauses appropriately:
             // Exp: _setVariables( (x1 or x2 or x3) and (not x2 or not x3 or x4), True, 2) = (not x3 or x4)
             // NOTE: the assignment has to be True or False here
 
-            return clauses.Select(clause => _setVariableSingleClause(clause.Copy(), assignment, indexOfAssignment)).Where(clauseVariableAssigned => clauseVariableAssigned.Count > 0).ToList();
+            return clauses.Select(clause => _setVariableSingleClause(clause.Copy(), assignment, indexOfAssignment)).Where(clauseVariableAssigned => clauseVariableAssigned != null).Select(c => c!).ToList();
         }
 
-        private static Clause _setVariableSingleClause(Clause clause, Assignment assignment, int indexOfAssignment)
+        private static Clause? _setVariableSingleClause(Clause clause, Assignment assignment, int indexOfAssignment)
         {
             // Jesli assignment == Assignment.False, to spelnialnosc clause jest wtw zawiera on literal negated == True.
             // Jesli assignment == Assignment.True,  to spelnialnosc clause jest wtw zawiera on literal negated == False.
             bool clauseIsSatisfied = clause.ContainLiteral(new Literal(indexOfAssignment, assignment == Assignment.False));
             if (clauseIsSatisfied)
             {
-                return new Clause(); // Then the check for clauseVariableAssigned.Count > 0 will be false.
+                return null; // Then the check for clauseVariableAssigned != null will be false. (clause with 0 elements is required in algorithm!)
             }
 
             clause.RemoveLiteral(new Literal(indexOfAssignment, assignment == Assignment.True)); // TODO(Upewnij sie, ze clause jest przekazany jako kopia)
 
             return clause;
         }
-        
+
         private List<Clause> _simplifyClauses(List<Clause> clauses)
         {
             // Will simplify 3 things in every clause:
@@ -76,41 +157,42 @@
                 // If the array length is not equal to 3, it doesn't meet the requirement.
                 throw new Exception("_simplifyClause() got the clause of length different from 3.");
             }
-            
+
             var variablesInClause = clause.ListVariables();
-            
+
             int variableIdOfNonUnique = _AreAllUnique(variablesInClause);
             if (variableIdOfNonUnique == -1) // All are unique
                 return clause;
 
             Literal literalNonNegated = new Literal(variableIdOfNonUnique, false);
             Literal literalNegated = new Literal(variableIdOfNonUnique, true);
-            
+
             clause.RemoveLiteral(literalNonNegated);
             clause.RemoveLiteral(literalNegated);
 
             if (clause.Count == 1) // in the original clause there ware both Negated and NonNegated versions
             {
                 // Remove the last literal:
-                clause.RemoveLiteral(new Literal(clause.MaxVariableIndex, true));
-                clause.RemoveLiteral(new Literal(clause.MaxVariableIndex, false));
+                int index = clause.MaxVariableIndex;
+                clause.RemoveLiteral(new Literal(index, true));
+                clause.RemoveLiteral(new Literal(index, false));
                 return clause; // Then the check for clauseVariableAssigned.Count > 0 will be false.
             }
-            
+
             variablesInClause = clause.ListVariables(); // update
             variableIdOfNonUnique = _AreAllUnique(variablesInClause); // update
-            
+
             if (variableIdOfNonUnique == -1) // It is already ok
             {
                 return clause;
             }
-            
+
             clause.RemoveLiteral(literalNonNegated);
             clause.RemoveLiteral(literalNegated);
-            
+
             return clause;
         }
-        
+
         private static int _AreAllUnique(int[] numbers) // only used in Formula._simplifyClauses()
         {
             // Create a HashSet to store the unique numbers.
@@ -130,6 +212,23 @@
 
             // All numbers are unique.
             return -1;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append($"{VariableCount} {_clauses.Count}\n");
+            foreach (var clause in _clauses)
+            {
+                var literals = clause.GetLiterals();
+                sb.Append((literals[0].Negated ? -1 : 1) * (literals[0].VariableNumber + 1));
+                for (int i=1;i<literals.Length; i++)
+                {
+                    sb.Append($" {(literals[i].Negated ? -1 : 1) * (literals[i].VariableNumber + 1)}");
+                }
+                sb.Append("\n");
+            }
+            return sb.ToString();
         }
     }
 }

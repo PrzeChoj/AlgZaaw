@@ -21,7 +21,7 @@ namespace _3SATSolverLib
             int variables = int.Parse(split[0]);
             int clauses = int.Parse(split[1]);
 
-            Formula formula = new Formula();
+            Formula formula = new Formula(variables);
             for (int i = 1; i <= clauses; i++)
             {
                 Clause c = new Clause();
@@ -35,7 +35,7 @@ namespace _3SATSolverLib
                     if (Math.Abs(num) < 1 || Math.Abs(num) > variables)
                         throw new ArgumentException($"Variable {num} out of range (should be from 1 to {variables})");
 
-                    c.AddLiteral(new Literal(Math.Abs(num), num < 0));
+                    c.AddLiteral(new Literal(Math.Abs(num) - 1, num < 0));
                 }
                 formula.AddClause(c);
             }
@@ -58,7 +58,7 @@ namespace _3SATSolverLib
             int clauses = int.Parse(split[1]);
 
             // The rest of the lines:
-            Formula formula = new Formula();
+            Formula formula = new Formula(variables);
             for (int i = 1; i <= clauses; i++)
             {
                 Clause c = new Clause();
@@ -75,7 +75,7 @@ namespace _3SATSolverLib
                     if (Math.Abs(num) < 1 || Math.Abs(num) > variables)
                         throw new ArgumentException($"Variable {num} out of range (should be from 1 to {variables})");
 
-                    c.AddLiteral(new Literal(Math.Abs(num), num < 0));
+                    c.AddLiteral(new Literal(Math.Abs(num) - 1, num < 0));
                 }
                 formula.AddClause(c);
             }

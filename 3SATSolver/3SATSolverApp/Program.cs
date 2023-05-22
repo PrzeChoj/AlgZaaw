@@ -2,14 +2,22 @@
 
 Formula formula;
 if (args.Length > 0)
+{
+    Console.WriteLine($"Reading from file {args[0]}...");
     formula = FormulaReader.ReadFromFile(args[0]);
+}
 else
+{
+    Console.WriteLine("No file provided as argument. Please type formula in proper format:");
     formula = FormulaReader.ReadFromConsole();
+}
 
 formula.Solve();
 
 SolutionWriter.WriteToConsole(formula);
 
+Console.WriteLine("Press any key to exit...");
+Console.ReadKey();
 
 // Testy jednostkowe (trzeba upublicznic metody):
 /*
