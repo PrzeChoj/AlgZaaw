@@ -6,6 +6,7 @@ while (choose < '1' || choose > '3')
     Console.WriteLine("Rodzaj testu:");
     Console.WriteLine("\t1. losowy");
     Console.WriteLine("\t2. spelnialny");
+    Console.WriteLine("\t3. niespelnialny");
     choose = Console.Read();
 }
 
@@ -33,6 +34,9 @@ switch (choose)
         break;
     case '2':
         formula = fg.SatisfiableFormula(variables, clauses);
+        break;
+    case '3':
+        formula = fg.UnsatisfiableFormula(variables, clauses);
         break;
     default:
         throw new InvalidDataException();
