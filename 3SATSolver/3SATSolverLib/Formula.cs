@@ -1,5 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace _3SATSolverLib
 {
@@ -98,7 +101,7 @@ namespace _3SATSolverLib
                         return AssignSolution(newClauses, assignments);
                     }
                 default:
-                    throw new InvalidDataException("Clause contains more than 3 literals");
+                    throw new ArgumentException("Clause contains more than 3 literals");
             }
         }
 

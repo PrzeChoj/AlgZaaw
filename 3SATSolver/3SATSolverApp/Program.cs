@@ -1,23 +1,48 @@
 ﻿using _3SATSolverLib;
+using System;
 
-Formula formula;
-if (args.Length > 0)
+class Program
 {
-    Console.WriteLine($"Reading from file {args[0]}...");
-    formula = FormulaReader.ReadFromFile(args[0]);
+    public static void Main(string[] args)
+    {
+        Formula formula;
+        if (args.Length > 0)
+        {
+            Console.WriteLine($"Reading from file {args[0]}...");
+            formula = FormulaReader.ReadFromFile(args[0]);
+        }
+        else
+        {
+            int choice = 0;
+            while (choice != '1' && choice != '2')
+            {
+                Console.WriteLine("Select an option:");
+                Console.WriteLine("\t1. Read formula from file");
+                Console.WriteLine("\t2. Type formula manually");
+                choice = Console.Read();
+            }
+            Console.ReadLine();
+            if (choice == '1')
+            {
+                Console.Write("Path to file: ");
+                string path = Console.ReadLine();
+                formula = FormulaReader.ReadFromFile(path);
+            }
+            else
+            {
+                Console.WriteLine("Type formula in proper format (variableCount clauseCount <newline> [list of clauses]):");
+                formula = FormulaReader.ReadFromConsole();
+            }
+        }
+
+        formula.Solve();
+
+        SolutionWriter.WriteToConsole(formula);
+
+        Console.WriteLine("Press any key to exit...");
+        Console.ReadKey();
+    }
 }
-else
-{
-    Console.WriteLine("No file provided as argument. Please type formula in proper format:");
-    formula = FormulaReader.ReadFromConsole();
-}
-
-formula.Solve();
-
-SolutionWriter.WriteToConsole(formula);
-
-Console.WriteLine("Press any key to exit...");
-Console.ReadKey();
 
 // Testy jednostkowe (trzeba upublicznic metody):
 /*
