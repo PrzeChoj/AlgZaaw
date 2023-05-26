@@ -77,6 +77,7 @@ namespace _3SATSolverLib
                         assignments[i] = literals[0].Negated ? Assignment.True : Assignment.False;
                         assignments[j] = literals[1].Negated ? Assignment.False : Assignment.True;
                         newClauses = _setVariable(clauses, assignments[i], i);
+                        newClauses = _setVariable(newClauses, assignments[j], j);
                         return AssignSolution(newClauses, assignments);
                     }
                 case 3:
@@ -92,12 +93,16 @@ namespace _3SATSolverLib
                         assignments[i] = literals[0].Negated ? Assignment.True : Assignment.False;
                         assignments[j] = literals[1].Negated ? Assignment.False : Assignment.True;
                         newClauses = _setVariable(clauses, assignments[i], i);
+                        newClauses = _setVariable(newClauses, assignments[j], j);
                         if (AssignSolution(newClauses, assignments))
                             return true;
 
                         assignments[i] = literals[0].Negated ? Assignment.True : Assignment.False;
                         assignments[j] = literals[1].Negated ? Assignment.True : Assignment.False;
                         assignments[k] = literals[2].Negated ? Assignment.False : Assignment.True;
+                        newClauses = _setVariable(clauses, assignments[i], i);
+                        newClauses = _setVariable(newClauses, assignments[j], j);
+                        newClauses = _setVariable(newClauses, assignments[k], k);
                         return AssignSolution(newClauses, assignments);
                     }
                 default:
