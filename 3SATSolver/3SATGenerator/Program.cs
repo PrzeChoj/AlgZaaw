@@ -44,5 +44,7 @@ switch (choose)
 }
 
 Console.Write("Wygenerowano formule. Podaj nazwe pliku do zapisu: ");
-string fileName = Console.ReadLine();
+string? fileName = null;
+while (fileName == null || fileName.Length == 0)
+    fileName = Console.ReadLine();
 File.WriteAllText(fileName, formula.ToString());
