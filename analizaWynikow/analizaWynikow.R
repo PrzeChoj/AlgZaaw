@@ -19,8 +19,6 @@ time_estimate <- function(n, a_log10 = -0.350414, c_log10 = 0.004781){
   (10^a_log10)*n*((10^c_log10)^n)
 }
 
-time_estimate(c(100, 200))
-
 
 g <- my_tibble %>% 
   ggplot2::ggplot(ggplot2::aes(variables, timeMs)) +
@@ -54,10 +52,12 @@ ggplot2::ggsave("wykres_czasu.png", g, width = 11, height = 5)
 # najdluzej liczacy sie problem
 my_tibble[my_tibble$timeMs > 1231840,]
 
-median(my_tibble[my_tibble$variables == 150,]$timeMs)
-median(my_tibble[my_tibble$variables == 200,]$timeMs)
+median(my_tibble[my_tibble$variables == 100,]$timeMs) # 120
+median(my_tibble[my_tibble$variables == 150,]$timeMs) # 285
+median(my_tibble[my_tibble$variables == 200,]$timeMs) # 994
 
 
+max(my_tibble[my_tibble$variables == 100,]$timeMs) # 4271
 
 
 
