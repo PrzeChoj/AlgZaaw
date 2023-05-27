@@ -37,6 +37,16 @@ void TestSATGroup(int vars)
     TestSAT(vars, vars * clauseFactor);
 }
 
+string GetResult(Formula formula, Assignment[]? assignments)
+{
+    if (assignments == null)
+        return "NO";
+    if (formula.IsSatisfiedBy(assignments))
+        return "YES (OK)";
+    else
+        return "YES (NOT OK)";
+}
+
 void TestSAT(int vars, int clauses)
 {
     Console.WriteLine($"Testing v={vars}, c={clauses}");
@@ -45,21 +55,21 @@ void TestSAT(int vars, int clauses)
     var a = rnd.Solve();
     sw.Stop();
 
-    sb.AppendLine($"{vars};{clauses};Random;{a != null};{sw.ElapsedMilliseconds}");
+    sb.AppendLine($"{vars};{clauses};Random;{GetResult(rnd, a)};{sw.ElapsedMilliseconds}");
 
     Formula sat = fg.SatisfiableFormula(vars, clauses);
     sw = Stopwatch.StartNew();
     a = sat.Solve();
     sw.Stop();
 
-    sb.AppendLine($"{vars};{clauses};Satisfiable;{a != null};{sw.ElapsedMilliseconds}");
+    sb.AppendLine($"{vars};{clauses};Satisfiable;{GetResult(sat, a)};{sw.ElapsedMilliseconds}");
 
     Formula unsat = fg.UnsatisfiableFormula(vars, clauses);
     sw = Stopwatch.StartNew();
     a = unsat.Solve();
     sw.Stop();
 
-    sb.AppendLine($"{vars};{clauses};Unsatisfiable;{a != null};{sw.ElapsedMilliseconds}");
+    sb.AppendLine($"{vars};{clauses};Unsatisfiable;{GetResult(unsat, a)};{sw.ElapsedMilliseconds}");
     File.AppendAllText("results.csv", sb.ToString());
     sb.Clear();
 }

@@ -24,6 +24,16 @@ namespace _3SATSolverLib
             VariableCount = variables;
         }
 
+        public bool IsSatisfiedBy(Assignment[] assignments)
+        {
+            foreach (var clause in  _clauses)
+            {
+                if (!clause.IsSatisfiedBy(assignments))
+                    return false;
+            }
+            return true;
+        }
+
         public Assignment[]? Solve()
         {
             if (IsSolved)
@@ -159,7 +169,7 @@ namespace _3SATSolverLib
 
         private static Clause _SimplifyClause(Clause clause)
         {
-            // Note: The clause is not a copy, but we want it that way
+            clause = clause.Copy();
             if (clause.Count != 3)
             {
                 // If the array length is not equal to 3, it doesn't meet the requirement.

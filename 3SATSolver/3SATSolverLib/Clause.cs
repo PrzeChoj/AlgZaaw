@@ -21,6 +21,16 @@ namespace _3SATSolverLib
 
         public Literal[] GetLiterals() => _literals.ToArray();
 
+        public bool IsSatisfiedBy(Assignment[] assignments)
+        {
+            foreach (var literal in _literals)
+            {
+                if ((!literal.Negated && assignments[literal.VariableNumber] == Assignment.True) || (literal.Negated && assignments[literal.VariableNumber] == Assignment.False))
+                    return true;
+            }
+            return false;
+        }
+
         public Clause Copy()
         {
             Clause copyClause = new Clause();
