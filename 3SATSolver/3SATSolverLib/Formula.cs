@@ -30,7 +30,7 @@ namespace _3SATSolverLib
                 return Solution;
 
             Assignment[] result = new Assignment[VariableCount];
-            List<Clause> clausesSimplified = _simplifyClauses(_clauses);
+            List<Clause> clausesSimplified = _SimplifyClauses(_clauses);
             Solution = AssignSolution(clausesSimplified, result) ? result : null;
             IsSolved = true;
 
@@ -49,7 +49,7 @@ namespace _3SATSolverLib
             if (clauses.Count == 0)
                 return true;
 
-            Clause current = FindSmallestClause(clauses);
+            Clause current = _FindSmallestClause(clauses);
 
             if (current.Count == 0)
                 return false;
@@ -59,50 +59,50 @@ namespace _3SATSolverLib
             switch (literals.Length)
             {
                 case 1:
-                    {
+                    { // This single literal has only one possibility to be
                         int i = literals[0].VariableNumber;
                         assignments[i] = literals[0].Negated ? Assignment.False : Assignment.True;
-                        var newClauses = _setVariable(clauses, assignments[i], i);
+                        var newClauses = _SetVariable(clauses, assignments[i], i);
                         return AssignSolution(newClauses, assignments);
                     }
                 case 2:
                     {
                         int i = literals[0].VariableNumber;
-                        int j = literals[1].VariableNumber;
+                        int j = literals[1].VariableNumber; // It is sure that i != j, 'cause _SimplifyClauses() was called
                         assignments[i] = literals[0].Negated ? Assignment.False : Assignment.True;
-                        var newClauses = _setVariable(clauses, assignments[i], i);
+                        var newClauses = _SetVariable(clauses, assignments[i], i);
                         if (AssignSolution(newClauses, assignments))
                             return true;
 
                         assignments[i] = literals[0].Negated ? Assignment.True : Assignment.False;
                         assignments[j] = literals[1].Negated ? Assignment.False : Assignment.True;
-                        newClauses = _setVariable(clauses, assignments[i], i);
-                        newClauses = _setVariable(newClauses, assignments[j], j);
+                        newClauses = _SetVariable(clauses, assignments[i], i);
+                        newClauses = _SetVariable(newClauses, assignments[j], j);
                         return AssignSolution(newClauses, assignments);
                     }
                 case 3:
                     {
                         int i = literals[0].VariableNumber;
                         int j = literals[1].VariableNumber;
-                        int k = literals[2].VariableNumber;
+                        int k = literals[2].VariableNumber; // It is sure that i, j and k are different, 'cause _SimplifyClauses() was called
                         assignments[i] = literals[0].Negated ? Assignment.False : Assignment.True;
-                        var newClauses = _setVariable(clauses, assignments[i], i);
+                        var newClauses = _SetVariable(clauses, assignments[i], i);
                         if (AssignSolution(newClauses, assignments))
                             return true;
 
                         assignments[i] = literals[0].Negated ? Assignment.True : Assignment.False;
                         assignments[j] = literals[1].Negated ? Assignment.False : Assignment.True;
-                        newClauses = _setVariable(clauses, assignments[i], i);
-                        newClauses = _setVariable(newClauses, assignments[j], j);
+                        newClauses = _SetVariable(clauses, assignments[i], i);
+                        newClauses = _SetVariable(newClauses, assignments[j], j);
                         if (AssignSolution(newClauses, assignments))
                             return true;
 
                         assignments[i] = literals[0].Negated ? Assignment.True : Assignment.False;
                         assignments[j] = literals[1].Negated ? Assignment.True : Assignment.False;
                         assignments[k] = literals[2].Negated ? Assignment.False : Assignment.True;
-                        newClauses = _setVariable(clauses, assignments[i], i);
-                        newClauses = _setVariable(newClauses, assignments[j], j);
-                        newClauses = _setVariable(newClauses, assignments[k], k);
+                        newClauses = _SetVariable(clauses, assignments[i], i);
+                        newClauses = _SetVariable(newClauses, assignments[j], j);
+                        newClauses = _SetVariable(newClauses, assignments[k], k);
                         return AssignSolution(newClauses, assignments);
                     }
                 default:
@@ -110,7 +110,7 @@ namespace _3SATSolverLib
             }
         }
 
-        private Clause FindSmallestClause(List<Clause> clauses)
+        private static Clause _FindSmallestClause(List<Clause> clauses)
         {
             int minCount = int.MaxValue;
             Clause? minClause = null;
@@ -125,16 +125,16 @@ namespace _3SATSolverLib
             return minClause!;
         }
 
-        private static List<Clause> _setVariable(List<Clause> clauses, Assignment assignment, int indexOfAssignment)
+        private static List<Clause> _SetVariable(List<Clause> clauses, Assignment assignment, int indexOfAssignment)
         {
             // Will delete a variable from clauses appropriately:
             // Exp: _setVariables( (x1 or x2 or x3) and (not x2 or not x3 or x4), True, 2) = (not x3 or x4)
             // NOTE: the assignment has to be True or False here
 
-            return clauses.Select(clause => _setVariableSingleClause(clause.Copy(), assignment, indexOfAssignment)).Where(clauseVariableAssigned => clauseVariableAssigned != null).Select(c => c!).ToList();
+            return clauses.Select(clause => _SetVariableSingleClause(clause.Copy(), assignment, indexOfAssignment)).Where(clauseVariableAssigned => clauseVariableAssigned != null).Select(c => c!).ToList();
         }
 
-        private static Clause? _setVariableSingleClause(Clause clause, Assignment assignment, int indexOfAssignment)
+        private static Clause? _SetVariableSingleClause(Clause clause, Assignment assignment, int indexOfAssignment)
         {
             // Jesli assignment == Assignment.False, to spelnialnosc clause jest wtw zawiera on literal negated == True.
             // Jesli assignment == Assignment.True,  to spelnialnosc clause jest wtw zawiera on literal negated == False.
@@ -149,15 +149,15 @@ namespace _3SATSolverLib
             return clause;
         }
 
-        private List<Clause> _simplifyClauses(List<Clause> clauses)
+        private static List<Clause> _SimplifyClauses(List<Clause> clauses)
         {
             // Will simplify 3 things in every clause:
             // Exp: _simplifyClauses( (x1 or x1 or x2) and (not x1 or not x2 or not x2) and (x1 or x2 or not x1) ) = (x1 or x2) and (not x1 or not x2)
 
-            return clauses.Select(_simplifyClause).Where(simplifiedClause => simplifiedClause.Count > 0).ToList();
+            return clauses.Select(_SimplifyClause).Where(simplifiedClause => simplifiedClause.Count > 0).ToList();
         }
 
-        private static Clause _simplifyClause(Clause clause)
+        private static Clause _SimplifyClause(Clause clause)
         {
             // Note: The clause is not a copy, but we want it that way
             if (clause.Count != 3)

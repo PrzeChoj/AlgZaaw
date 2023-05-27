@@ -1,6 +1,11 @@
 # MacOS
 \.DS_Store
 
+# RStudio
+*\.Rproj
+*\.Rhistory
+.Rproj.user
+
 # Rider
 3SATSolver/3SATSolverLib/\.idea/*
 3SATSolver/\.idea/*
