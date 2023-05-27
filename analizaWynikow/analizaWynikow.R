@@ -23,15 +23,14 @@ time_estimate(c(100, 200))
 
 
 g <- my_tibble %>% 
-  dplyr::mutate(estimated_time = time_estimate(variables)) %>% 
   ggplot2::ggplot(ggplot2::aes(variables, timeMs)) +
   ggplot2::geom_jitter(ggplot2::aes(color = "Data Points"), width = 1) +
-  ggplot2::scale_y_log10() +
+  ggplot2::scale_y_log10(breaks = c(1, 100, 10000), labels = c("1 ms", "100 ms", "10 s")) +
   ggplot2::scale_x_continuous(breaks = unique(my_tibble$variables)) +
   ggplot2::geom_function(ggplot2::aes(color = "Time Estimate"), fun = time_estimate) +
   ggplot2::ggtitle("Czas potrzebny na rozwiązanie problemu 3SAT") +
-  ggplot2::xlab("Liczba zmiennych w formule") + ggplot2::ylab("Czas (w milisekundach)") +
-  ggplot2::labs(colour = "", subtitle = "pominięto obserwacje dla ktorych czas = 0ms") +
+  ggplot2::xlab("Liczba zmiennych w formule (n)") + ggplot2::ylab("Czas") +
+  ggplot2::labs(colour = "", subtitle = "pominięto obserwacje dla ktorych czas = 0 ms") +
   ggplot2::scale_color_manual(
     labels = c("Obserwacje",
                expression(0.45 * italic("n") * (1.011)^n)),
@@ -47,6 +46,18 @@ g <- my_tibble %>%
 g
 
 ggplot2::ggsave("wykres_czasu.png", g, width = 11, height = 5)
+
+
+
+# Wielkosc
+
+# najdluzej liczacy sie problem
+my_tibble[my_tibble$timeMs > 1231840,]
+
+median(my_tibble[my_tibble$variables == 150,]$timeMs)
+median(my_tibble[my_tibble$variables == 200,]$timeMs)
+
+
 
 
 
