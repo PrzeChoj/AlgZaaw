@@ -8,9 +8,10 @@ while (choose < '1' || choose > '3')
     Console.WriteLine("\t2. spelnialny");
     Console.WriteLine("\t3. niespelnialny");
     choose = Console.Read();
+    Console.ReadLine();
 }
 
-Console.ReadLine();
+
 int variables = 0;
 while (variables <= 0)
 {

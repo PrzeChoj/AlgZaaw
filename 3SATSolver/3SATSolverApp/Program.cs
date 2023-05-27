@@ -20,8 +20,9 @@ class Program
                 Console.WriteLine("\t1. Read formula from file");
                 Console.WriteLine("\t2. Type formula manually");
                 choice = Console.Read();
+                Console.ReadLine();
             }
-            Console.ReadLine();
+            
             if (choice == '1')
             {
                 Console.Write("Path to file: ");
@@ -39,7 +40,23 @@ class Program
 
         SolutionWriter.WriteToConsole(formula);
 
-        Console.WriteLine("Press any key to exit...");
+        {
+            int choice = 0;
+            while (choice != 'y' && choice != 'Y' && choice != 'n' && choice != 'N')
+            {
+                Console.Write("Do you want to save solution to file? (Y/N) ");
+                choice = Console.Read();
+                Console.ReadLine();
+            }
+            if (choice == 'y' || choice == 'Y')
+            {
+                Console.WriteLine("Path to file: ");
+                string path = Console.ReadLine();
+                SolutionWriter.WriteToFile(path, formula);
+            }
+        }
+
+        Console.WriteLine("Done. Press any key to exit...");
         Console.ReadKey();
     }
 }

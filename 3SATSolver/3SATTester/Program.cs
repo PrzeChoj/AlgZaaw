@@ -65,7 +65,17 @@ void TestSAT(int vars, int clauses)
 }
 
 sb.AppendLine($"variables;clauses;type;result;timeMs");
-int vars = 50;
+int vars = 3;
+TestSATGroup(vars);
+vars = 5;
+TestSATGroup(vars);
+vars = 10;
+TestSATGroup(vars);
+vars = 15;
+TestSATGroup(vars);
+vars = 20;
+TestSATGroup(vars);
+vars = 50;
 TestSATGroup(vars);
 vars = 75;
 TestSATGroup(vars);
